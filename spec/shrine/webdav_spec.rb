@@ -42,7 +42,7 @@ RSpec.describe Shrine::Storage::WebDAV do
       it 'downloads the file and save it to temporary file' do
         stab = stub_request(:get, "#{host}/#{dir}/#{file_name}").to_return(status: 200, body: 'test_content')
         tempfile = subject.open("#{dir}/#{file_name}")
-        expect(tempfile).to be_instance_of(Tempfile)
+        expect(tempfile).to be_instance_of(Down::ChunkedIO)
         expect(tempfile.read).to eq('test_content')
         expect(stab).to have_been_requested
       end
@@ -54,7 +54,7 @@ RSpec.describe Shrine::Storage::WebDAV do
           stab = stub_request(:get, "#{host}/#{dir}/wrong_name").to_return(status: 404)
           subject.open("#{dir}/wrong_name")
           expect(stab).to have_been_requested
-        }.to raise_error(StandardError)
+        }.to raise_error(Shrine::Error)
       end
     end
   end

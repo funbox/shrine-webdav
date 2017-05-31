@@ -1,5 +1,6 @@
 require 'shrine'
 require 'http'
+require 'down/http'
 
 class Shrine
   module Storage
@@ -22,15 +23,9 @@ class Shrine
       end
 
       def open(id)
-        tempfile = Tempfile.new('webdav-', binmode: true)
-        response = HTTP.get(path(@host, id))
-        unless response.code.to_i == 200
-          tempfile.close!
-          raise "downloading of #{path(@host, id)} failed, the server response was #{response}"
-        end
-        tempfile.write(response)
-        tempfile.open
-        tempfile
+        Down.open(path(@host, id))
+      rescue Down::NotFound => exception
+        raise Shrine::Error, exception.message
       end
 
       def exists?(id)
