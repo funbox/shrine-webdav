@@ -15,7 +15,7 @@ class Shrine
         mkpath_to_file(id)
         response = HTTP.put(path(@host, id), body: io.read)
         return if (200..299).cover?(response.code.to_i)
-        raise "uploading of #{path(@host, id)} failed, the server response was #{response}"
+        raise Error, "uploading of #{path(@host, id)} failed, the server response was #{response}"
       end
 
       def url(id, **options)
@@ -25,7 +25,7 @@ class Shrine
       def open(id)
         Down.open(path(@host, id))
       rescue Down::NotFound => exception
-        raise Shrine::Error, exception.message
+        raise Error, exception.message
       end
 
       def exists?(id)
@@ -57,7 +57,7 @@ class Shrine
         dirs.each do |dir|
           response = HTTP.request(:mkcol, "#{@host}#{dir}")
           unless (200..301).cover?(response.code.to_i)
-            raise "creation of directory #{@host}#{dir} failed, the server response was #{response}"
+            raise Error, "creation of directory #{@host}#{dir} failed, the server response was #{response}"
           end
         end
       end
