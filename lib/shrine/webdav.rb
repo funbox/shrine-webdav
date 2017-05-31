@@ -1,4 +1,5 @@
 require 'shrine'
+require 'http'
 
 class Shrine
   module Storage
