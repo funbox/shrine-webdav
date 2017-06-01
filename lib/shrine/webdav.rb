@@ -1,4 +1,6 @@
 require 'shrine'
+require 'http'
+require 'down/http'
 
 class Shrine
   module Storage
@@ -13,7 +15,7 @@ class Shrine
         mkpath_to_file(id)
         response = HTTP.put(path(@host, id), body: io.read)
         return if (200..299).cover?(response.code.to_i)
-        raise "uploading of #{path(@host, id)} failed, the server response was #{response}"
+        raise Error, "uploading of #{path(@host, id)} failed, the server response was #{response}"
       end
 
       def url(id, **options)
@@ -21,15 +23,7 @@ class Shrine
       end
 
       def open(id)
-        tempfile = Tempfile.new('webdav-', binmode: true)
-        response = HTTP.get(path(@host, id))
-        unless response.code.to_i == 200
-          tempfile.close!
-          raise "downloading of #{path(@host, id)} failed, the server response was #{response}"
-        end
-        tempfile.write(response)
-        tempfile.open
-        tempfile
+        Down::Http.open(path(@host, id))
       end
 
       def exists?(id)
@@ -61,7 +55,7 @@ class Shrine
         dirs.each do |dir|
           response = HTTP.request(:mkcol, "#{@host}#{dir}")
           unless (200..301).cover?(response.code.to_i)
-            raise "creation of directory #{@host}#{dir} failed, the server response was #{response}"
+            raise Error, "creation of directory #{@host}#{dir} failed, the server response was #{response}"
           end
         end
       end
