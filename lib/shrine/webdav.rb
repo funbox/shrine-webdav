@@ -23,7 +23,7 @@ class Shrine
       end
 
       def open(id)
-        Down.open(path(@host, id))
+        Down::Http.open(path(@host, id))
       rescue Down::NotFound => exception
         raise Error, exception.message
       end
