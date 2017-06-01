@@ -83,7 +83,7 @@ report.pdf = File.open('sample.pdf')
 # to "http://webdav-server.com/your_project/cache/#{report.id}.xls"
 report.xls = File.open('sample.xls')
 
-# after commiting in database both files sample.pdf and sample.xls have
+# after committing in database both files sample.pdf and sample.xls have
 # been uploaded to "http://webdav-server.com/your_project/store/..."
 report.save
 ```
