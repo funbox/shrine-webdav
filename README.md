@@ -2,6 +2,8 @@
 
 Provides a simple WebDAV storage for Shrine.
 
+[![Build Status](https://travis-ci.org/funbox/shrine-webdav.svg?branch=master)](https://travis-ci.org/funbox/shrine-webdav)
+
 ## Installation
 
 Add this line to your application's Gemfile:
