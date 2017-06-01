@@ -24,8 +24,6 @@ class Shrine
 
       def open(id)
         Down::Http.open(path(@host, id))
-      rescue Down::NotFound => exception
-        raise Error, exception.message
       end
 
       def exists?(id)

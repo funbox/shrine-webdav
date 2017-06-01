@@ -54,7 +54,7 @@ RSpec.describe Shrine::Storage::WebDAV do
           stab = stub_request(:get, "#{host}/#{dir}/wrong_name").to_return(status: 404)
           subject.open("#{dir}/wrong_name")
           expect(stab).to have_been_requested
-        }.to raise_error(Shrine::Error)
+        }.to raise_error(Down::NotFound)
       end
     end
   end
