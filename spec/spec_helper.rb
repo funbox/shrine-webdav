@@ -1,6 +1,6 @@
 require 'bundler/setup'
 require 'webmock/rspec'
-require 'shrine/webdav'
+require 'shrine/storage/webdav'
 
 # TODO: remove once https://github.com/bblimke/webmock/pull/704 is merged
 class HTTP::Response::Streamer
