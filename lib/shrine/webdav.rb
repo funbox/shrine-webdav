@@ -43,8 +43,10 @@ class Shrine
 
       def mkpath_to_file(path_to_file)
         last_slash = path_to_file.rindex('/')
-        path = path_to_file[0..last_slash]
-        mkpath(path)
+        if last_slash
+          path = path_to_file[0..last_slash]
+          mkpath(path)
+        end
       end
 
       def mkpath(path)

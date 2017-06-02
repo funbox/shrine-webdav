@@ -20,12 +20,22 @@ RSpec.describe Shrine::Storage::WebDAV do
   describe '#upload' do
     let(:file) { double.tap { |file| allow(file).to receive(:read).and_return('content') } }
 
-    it 'creates subdirectory and uploads file in it' do
-      mkcol_stab = stub_request(:mkcol, "#{host}/#{dir}").to_return(status: 200)
-      put_stab = stub_request(:put, "#{host}/#{dir}/#{file_name}").to_return(status: 200)
-      subject.upload(file, "#{dir}/#{file_name}")
-      expect(mkcol_stab).to have_been_requested
-      expect(put_stab).to have_been_requested
+    context 'when id includes subdirectories' do
+      it 'creates subdirectory and uploads file in it' do
+        mkcol_stab = stub_request(:mkcol, "#{host}/#{dir}").to_return(status: 200)
+        put_stab = stub_request(:put, "#{host}/#{dir}/#{file_name}").to_return(status: 200)
+        subject.upload(file, "#{dir}/#{file_name}")
+        expect(mkcol_stab).to have_been_requested
+        expect(put_stab).to have_been_requested
+      end
+    end
+
+    context 'when id does not include subdirectories' do
+      it 'uploads file in the root directory' do
+        put_stab = stub_request(:put, "#{host}/#{file_name}").to_return(status: 200)
+        subject.upload(file, "#{file_name}")
+        expect(put_stab).to have_been_requested
+      end
     end
   end
 
