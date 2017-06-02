@@ -7,15 +7,16 @@ class Shrine
     class WebDAV
       def initialize(host:, prefix: nil)
         @host = host
-        mkpath(prefix) unless prefix.nil? || prefix.empty?
-        @host = path(host, prefix)
+        @prefix = prefix
+        @prefixed_host = path(@host, @prefix)
       end
 
       def upload(io, id, shrine_metadata: {}, **upload_options)
         mkpath_to_file(id)
-        response = HTTP.put(path(@host, id), body: io.read)
+        uri = path(@prefixed_host, id)
+        response = HTTP.put(uri, body: io.read)
         return if (200..299).cover?(response.code.to_i)
-        raise Error, "uploading of #{path(@host, id)} failed, the server response was #{response}"
+        raise Error, "uploading of #{uri} failed, the server response was #{response}"
       end
 
       def url(id, **options)
@@ -23,41 +24,46 @@ class Shrine
       end
 
       def open(id)
-        Down::Http.open(path(@host, id))
+        Down::Http.open(path(@prefixed_host, id))
       end
 
       def exists?(id)
-        response = HTTP.head(path(@host, id))
+        response = HTTP.head(path(@prefixed_host, id))
         (200..299).cover?(response.code.to_i)
       end
 
       def delete(id)
-        HTTP.delete(path(@host, id))
+        HTTP.delete(path(@prefixed_host, id))
       end
 
       private
 
       def path(host, uri)
-        [host, uri].compact.join('/')
+        (uri.nil? || uri.empty?) ? host : [host, uri].compact.join('/')
       end
 
       def mkpath_to_file(path_to_file)
+        @prefix_created ||= create_prefix
         last_slash = path_to_file.rindex('/')
         if last_slash
           path = path_to_file[0..last_slash]
-          mkpath(path)
+          mkpath(@prefixed_host, path)
         end
       end
 
-      def mkpath(path)
+      def create_prefix
+        mkpath(@host, @prefix) unless @prefix.nil? || @prefix.empty?
+      end
+
+      def mkpath(host, path)
         dirs = []
         path.split('/').each do |dir|
           dirs << "#{dirs[-1]}/#{dir}"
         end
         dirs.each do |dir|
-          response = HTTP.request(:mkcol, "#{@host}#{dir}")
+          response = HTTP.request(:mkcol, "#{host}#{dir}")
           unless (200..301).cover?(response.code.to_i)
-            raise Error, "creation of directory #{@host}#{dir} failed, the server response was #{response}"
+            raise Error, "creation of directory #{host}#{dir} failed, the server response was #{response}"
           end
         end
       end

@@ -2,20 +2,9 @@ require 'spec_helper'
 
 RSpec.describe Shrine::Storage::WebDAV do
   let(:host) { 'http://localhost/webdav' }
-
-  describe '.new' do
-    it 'initializes storage and creates initial directory tree there' do
-      stab1 = stub_request(:mkcol, "#{host}/prefix").to_return(status: 200)
-      stab2 = stub_request(:mkcol, "#{host}/prefix/cache").to_return(status: 200)
-      described_class.new(host: host, prefix: 'prefix/cache')
-      expect(stab1).to have_been_requested
-      expect(stab2).to have_been_requested
-    end
-  end
-
-  subject { described_class.new(host: host) }
   let(:dir) { 'dir' }
   let(:file_name) { 'file_name.pdf' }
+  subject { described_class.new(host: host) }
 
   describe '#upload' do
     let(:file) { double.tap { |file| allow(file).to receive(:read).and_return('content') } }
@@ -34,6 +23,24 @@ RSpec.describe Shrine::Storage::WebDAV do
       it 'uploads file in the root directory' do
         put_stab = stub_request(:put, "#{host}/#{file_name}").to_return(status: 200)
         subject.upload(file, "#{file_name}")
+        expect(put_stab).to have_been_requested
+      end
+    end
+
+    context 'when prefix presented' do
+      let(:prefix) { 'prefix/cache' }
+
+      it 'creates initial directory, creates subdirectory and uploads file in it' do
+        stab1      = stub_request(:mkcol, "#{host}/prefix").to_return(status: 200)
+        stab2      = stub_request(:mkcol, "#{host}/prefix/cache").to_return(status: 200)
+        mkcol_stab = stub_request(:mkcol, "#{host}/prefix/cache/#{dir}").to_return(status: 200)
+        put_stab   = stub_request(:put,   "#{host}/prefix/cache/#{dir}/#{file_name}").to_return(status: 200)
+
+        described_class.new(host: host, prefix: prefix).upload(file, "#{dir}/#{file_name}")
+
+        expect(stab1).to have_been_requested
+        expect(stab2).to have_been_requested
+        expect(mkcol_stab).to have_been_requested
         expect(put_stab).to have_been_requested
       end
     end
