@@ -5,14 +5,16 @@ require 'down/http'
 class Shrine
   module Storage
     class WebDAV
-      def initialize(host:, prefix: nil)
+      def initialize(host:, prefix: nil, upload_options: {})
         @host = host
         @prefix = prefix
         @prefixed_host = path(@host, @prefix)
+        @upload_options = upload_options
       end
 
       def upload(io, id, shrine_metadata: {}, **upload_options)
-        mkpath_to_file(id)
+        options = current_options(upload_options)
+        mkpath_to_file(id) unless options[:create_full_put_path]
         put(id, io)
       end
 
@@ -34,6 +36,12 @@ class Shrine
       end
 
       private
+
+      def current_options(upload_options)
+        options = {}
+        options.update(@upload_options)
+        options.update(upload_options)
+      end
 
       def put(id, io)
         uri = path(@prefixed_host, id)

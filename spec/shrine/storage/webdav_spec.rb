@@ -44,6 +44,24 @@ RSpec.describe Shrine::Storage::WebDAV do
         expect(put_stab).to have_been_requested
       end
     end
+
+    context 'when create_full_put_path option is set to true' do
+      let(:prefix) { 'prefix/cache' }
+      let(:upload_options) { {create_full_put_path: true} }
+      let!(:put_stab) { stub_request(:put, "#{host}/prefix/cache/#{dir}/#{file_name}").to_return(status: 200) }
+
+      it 'uploads file in its full path' do
+        storage = described_class.new(host: host, prefix: prefix, upload_options: upload_options)
+        storage.upload(file, "#{dir}/#{file_name}")
+        expect(put_stab).to have_been_requested
+      end
+
+      it 'uploads file in its full path' do
+        storage = described_class.new(host: host, prefix: prefix)
+        storage.upload(file, "#{dir}/#{file_name}", upload_options)
+        expect(put_stab).to have_been_requested
+      end
+    end
   end
 
   describe '#url' do
