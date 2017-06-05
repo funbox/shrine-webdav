@@ -13,10 +13,7 @@ class Shrine
 
       def upload(io, id, shrine_metadata: {}, **upload_options)
         mkpath_to_file(id)
-        uri = path(@prefixed_host, id)
-        response = HTTP.put(uri, body: io.read)
-        return if (200..299).cover?(response.code.to_i)
-        raise Error, "uploading of #{uri} failed, the server response was #{response}"
+        put(id, io)
       end
 
       def url(id, **options)
@@ -37,6 +34,13 @@ class Shrine
       end
 
       private
+
+      def put(id, io)
+        uri = path(@prefixed_host, id)
+        response = HTTP.put(uri, body: io.read)
+        return if (200..299).cover?(response.code.to_i)
+        raise Error, "uploading of #{uri} failed, the server response was #{response}"
+      end
 
       def path(host, uri)
         (uri.nil? || uri.empty?) ? host : [host, uri].compact.join('/')
