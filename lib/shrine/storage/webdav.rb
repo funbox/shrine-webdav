@@ -19,7 +19,7 @@ class Shrine
       end
 
       def url(id, **options)
-        id
+        path(@prefixed_host, id)
       end
 
       def open(id)

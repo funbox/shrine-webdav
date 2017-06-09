@@ -68,7 +68,7 @@ RSpec.describe Shrine::Storage::WebDAV do
     let(:id) { "#{dir}/#{file_name}" }
 
     it 'returns file id which is also a path to the file' do
-      expect(subject.url(id)).to eq(id)
+      expect(subject.url(id)).to eq("#{host}/#{id}")
     end
   end
 
