@@ -62,6 +62,22 @@ RSpec.describe Shrine::Storage::WebDAV do
         expect(put_stab).to have_been_requested
       end
     end
+
+    context 'when tempfile' do
+      let(:file) { Tempfile.new }
+
+      it 'uploads file ' do
+        put_stab = stub_request(:put, "#{host}/#{file_name}").to_return(status: 200)
+        subject.upload(file, "#{file_name}")
+        expect(put_stab).to have_been_requested
+      end
+
+      it 'deletes file after upload' do
+        put_stab = stub_request(:put, "#{host}/#{file_name}").to_return(status: 200)
+        subject.upload(file, "#{file_name}")
+        expect(file.path).to be_nil
+      end
+    end
   end
 
   describe '#url' do
