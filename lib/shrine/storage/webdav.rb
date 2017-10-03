@@ -45,7 +45,7 @@ class Shrine
 
       def put(id, io)
         uri = path(@prefixed_host, id)
-        response = HTTP.put(uri, body: io.read)
+        response = HTTP.put(uri, body: io)
         return if (200..299).cover?(response.code.to_i)
         raise Error, "uploading of #{uri} failed, the server response was #{response}"
       end
