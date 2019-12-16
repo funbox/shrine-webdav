@@ -3,7 +3,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 Gem::Specification.new do |spec|
   spec.name          = 'shrine-webdav'
-  spec.version       = '0.1.7'
+  spec.version       = '0.1.8'
   spec.authors       = ['Ivan Kushmantsev']
   spec.email         = ['i.kushmantsev@fun-box.ru']
 
@@ -19,12 +19,12 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ['lib']
 
-  spec.add_dependency 'shrine', '>= 2.0'
-  spec.add_dependency 'http', '>= 3.0'
-  spec.add_dependency 'down', '~> 4.0'
+  spec.add_dependency 'shrine', '~> 3.0'
+  spec.add_dependency 'http', '~> 4.0'
+  spec.add_dependency 'down', '~> 5.0'
 
-  spec.add_development_dependency 'bundler', '~> 1.14'
-  spec.add_development_dependency 'rake', '~> 10.0'
-  spec.add_development_dependency 'rspec', '~> 3.0'
-  spec.add_development_dependency 'webmock'
+  spec.add_development_dependency 'bundler', '~> 2'
+  spec.add_development_dependency 'rake', '~> 13'
+  spec.add_development_dependency 'rspec', '~> 3.9'
+  spec.add_development_dependency 'webmock', '~> 3'
 end
