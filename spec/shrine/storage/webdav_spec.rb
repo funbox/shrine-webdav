@@ -70,6 +70,22 @@ RSpec.describe Shrine::Storage::WebDAV do
     it 'returns file id which is also a path to the file' do
       expect(subject.url(id)).to eq("#{host}/#{id}")
     end
+
+    it 'returns url with specified :host' do
+      custom_host = 'https://cdn.example.com'
+      expect(subject.url(id, host: custom_host)).to eq("#{custom_host}/#{id}")
+    end
+
+    it 'returns url with specified :prefix' do
+      custom_prefix = 'uploads'
+      expect(subject.url(id, prefix: custom_prefix)).to eq("#{host}/#{custom_prefix}/#{id}")
+    end
+
+    it 'returns url with specified :host and :prefix' do
+      custom_host = 'https://cdn.example.com'
+      custom_prefix = 'uploads'
+      expect(subject.url(id, host: custom_host, prefix: custom_prefix)).to eq("#{custom_host}/#{custom_prefix}/#{id}")
+    end
   end
 
   describe '#open' do
