@@ -62,6 +62,54 @@ RSpec.describe Shrine::Storage::WebDAV do
         expect(put_stab).to have_been_requested
       end
     end
+
+    context 'when timeout option is presented' do
+      let(:prefix) { 'prefix/cache' }
+      let(:http_options) { {timeout: 3} }
+
+      it 'uploads file' do
+        stub_request(:mkcol, "#{host}/prefix").to_return(status: 200)
+        stub_request(:mkcol, "#{host}/prefix/cache").to_return(status: 200)
+        stub_request(:mkcol, "#{host}/prefix/cache/#{dir}").to_return(status: 200)
+        put_stub = stub_request(:put,   "#{host}/prefix/cache/#{dir}/#{file_name}").to_return(status: 200)
+
+        storage = described_class.new(host: host, prefix: prefix, http_options: http_options)
+        storage.upload(file, "#{dir}/#{file_name}")
+        expect(put_stub).to have_been_requested
+      end
+
+      context 'when timeout is presented as a hash' do
+        let(:prefix) { 'prefix/cache' }
+        let(:http_options) { {timeout: {connect: 5, write: 2, read: 10}} }
+
+        it 'uploads file' do
+          stub_request(:mkcol, "#{host}/prefix").to_return(status: 200)
+          stub_request(:mkcol, "#{host}/prefix/cache").to_return(status: 200)
+          stub_request(:mkcol, "#{host}/prefix/cache/#{dir}").to_return(status: 200)
+          put_stub = stub_request(:put,   "#{host}/prefix/cache/#{dir}/#{file_name}").to_return(status: 200)
+
+          storage = described_class.new(host: host, prefix: prefix, http_options: http_options)
+          storage.upload(file, "#{dir}/#{file_name}")
+          expect(put_stub).to have_been_requested
+        end
+      end
+    end
+
+    context 'when basic_auth option is presented' do
+      let(:prefix) { 'prefix/cache' }
+      let(:http_options) { {basic_auth: {user: 'user', pass: 'pass'}} }
+
+      it 'uploads file' do
+        stub_request(:mkcol, "#{host}/prefix").to_return(status: 200)
+        stub_request(:mkcol, "#{host}/prefix/cache").to_return(status: 200)
+        stub_request(:mkcol, "#{host}/prefix/cache/#{dir}").to_return(status: 200)
+        put_stub = stub_request(:put,   "#{host}/prefix/cache/#{dir}/#{file_name}").to_return(status: 200)
+
+        storage = described_class.new(host: host, prefix: prefix, http_options: http_options)
+        storage.upload(file, "#{dir}/#{file_name}")
+        expect(put_stub).to have_been_requested
+      end
+    end
   end
 
   describe '#url' do

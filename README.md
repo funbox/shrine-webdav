@@ -97,13 +97,38 @@ report.xls = File.open('sample.xls')
 report.save
 ```
 
+Gem also supports http options `timeout` and `basic auth` Basic usage:
+
+```
+Shrine::Storage::WebDAV.new(
+  host: 'http://webdav-server.com',
+  prefix: 'your_project/store',
+  http_options: {
+    basic_auth: { user: 'user', pass: 'pass' },
+    timeout: { connect: 5, write: 2, read: 10 }
+  }
+)
+```
+
+You can also use global timeouts like this:
+
+```
+Shrine::Storage::WebDAV.new(
+  host: 'http://webdav-server.com',
+  prefix: 'your_project/store',
+  http_options: {
+    timeout: 3
+  }
+)
+```
+
 ## Development
 
 After checking out the repo, run `bundle install` to install dependencies. Then, run `rake spec` to run the tests.
 
-To install this gem onto your local machine, run `bundle exec rake install`. 
+To install this gem onto your local machine, run `bundle exec rake install`.
 
-To release a new version, update the version number in `shrine-webdav.gemspec`, and then run `bundle exec rake release`, 
+To release a new version, update the version number in `shrine-webdav.gemspec`, and then run `bundle exec rake release`,
 which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
 
 ## Contributing

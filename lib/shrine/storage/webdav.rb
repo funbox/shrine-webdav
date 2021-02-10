@@ -5,11 +5,12 @@ require 'down/http'
 class Shrine
   module Storage
     class WebDAV
-      def initialize(host:, prefix: nil, upload_options: {})
+      def initialize(host:, prefix: nil, upload_options: {}, http_options: {})
         @host = host
         @prefix = prefix
         @prefixed_host = path(@host, @prefix)
         @upload_options = upload_options
+        @http_options = http_options
       end
 
       def upload(io, id, shrine_metadata: {}, **upload_options)
@@ -23,16 +24,20 @@ class Shrine
       end
 
       def open(id)
-        Down::Http.open(path(@prefixed_host, id))
+        Down::Http.open(path(@prefixed_host, id)) do |client|
+          client.timeout(timeout) if http_timeout
+          client.basic_auth(http_basic_auth) if http_basic_auth
+          client
+        end
       end
 
       def exists?(id)
-        response = HTTP.head(path(@prefixed_host, id))
+        response = http_client.head(path(@prefixed_host, id))
         (200..299).cover?(response.code.to_i)
       end
 
       def delete(id)
-        HTTP.delete(path(@prefixed_host, id))
+        http_client.delete(path(@prefixed_host, id))
       end
 
       private
@@ -45,7 +50,7 @@ class Shrine
 
       def put(id, io)
         uri = path(@prefixed_host, id)
-        response = HTTP.put(uri, body: io)
+        response = http_client.put(uri, body: io)
         return if (200..299).cover?(response.code.to_i)
         raise Error, "uploading of #{uri} failed, the server response was #{response}"
       end
@@ -73,11 +78,28 @@ class Shrine
           dirs << "#{dirs[-1]}/#{dir}"
         end
         dirs.each do |dir|
-          response = HTTP.request(:mkcol, "#{host}#{dir}")
+          response = http_client.request(:mkcol, "#{host}#{dir}")
           unless (200..301).cover?(response.code.to_i)
             raise Error, "creation of directory #{host}#{dir} failed, the server response was #{response}"
           end
         end
+      end
+
+      private
+
+      def http_client
+        client = HTTP
+        client = client.timeout(http_timeout) if http_timeout
+        client = client.basic_auth(http_basic_auth) if http_basic_auth
+        client
+      end
+
+      def http_timeout
+        @http_options.fetch(:timeout, false)
+      end
+
+      def http_basic_auth
+        @http_options.fetch(:basic_auth, false)
       end
     end
   end
