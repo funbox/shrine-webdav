@@ -5,7 +5,7 @@ Gem::Specification.new do |spec|
   spec.name          = 'shrine-webdav'
   spec.version       = '0.2.0'
   spec.authors       = ['Ivan Kushmantsev', 'Dmitry Efimov']
-  spec.email         = ['i.kushmantsev@fun-box.ru', 'd.efimov@fun-box.ru']
+  spec.email         = ['i.kushmantsev@fun-box.ru', 'tuwilof@gmail.com']
 
   spec.summary       = 'Provides a simple WebDAV storage for Shrine.'
   spec.description   = 'Provides a simple WebDAV storage for Shrine.'
