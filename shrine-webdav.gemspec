@@ -3,9 +3,9 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 Gem::Specification.new do |spec|
   spec.name          = 'shrine-webdav'
-  spec.version       = '0.1.8'
-  spec.authors       = ['Ivan Kushmantsev']
-  spec.email         = ['i.kushmantsev@fun-box.ru']
+  spec.version       = '0.2.0'
+  spec.authors       = ['Ivan Kushmantsev', 'Dmitry Efimov']
+  spec.email         = ['i.kushmantsev@fun-box.ru', 'd.efimov@fun-box.ru']
 
   spec.summary       = 'Provides a simple WebDAV storage for Shrine.'
   spec.description   = 'Provides a simple WebDAV storage for Shrine.'
