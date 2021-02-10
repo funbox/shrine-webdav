@@ -19,8 +19,9 @@ class Shrine
         put(id, io)
       end
 
-      def url(id, **options)
-        path(@prefixed_host, id)
+      def url(id, host: nil, **options)
+        base_url = path(host || @host, options[:prefix] || @prefix)
+        path(base_url, id)
       end
 
       def open(id)
