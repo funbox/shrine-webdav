@@ -86,7 +86,7 @@ RSpec.describe Shrine::Storage::WebDAV do
           stub_request(:mkcol, "#{host}/prefix").to_return(status: 200)
           stub_request(:mkcol, "#{host}/prefix/cache").to_return(status: 200)
           stub_request(:mkcol, "#{host}/prefix/cache/#{dir}").to_return(status: 200)
-          put_stub = stub_request(:put,   "#{host}/prefix/cache/#{dir}/#{file_name}").to_return(status: 200)
+          put_stub = stub_request(:put, "#{host}/prefix/cache/#{dir}/#{file_name}").to_return(status: 200)
 
           storage = described_class.new(host: host, prefix: prefix, http_options: http_options)
           storage.upload(file, "#{dir}/#{file_name}")
@@ -103,7 +103,7 @@ RSpec.describe Shrine::Storage::WebDAV do
         stub_request(:mkcol, "#{host}/prefix").to_return(status: 200)
         stub_request(:mkcol, "#{host}/prefix/cache").to_return(status: 200)
         stub_request(:mkcol, "#{host}/prefix/cache/#{dir}").to_return(status: 200)
-        put_stub = stub_request(:put,   "#{host}/prefix/cache/#{dir}/#{file_name}").to_return(status: 200)
+        put_stub = stub_request(:put, "#{host}/prefix/cache/#{dir}/#{file_name}").to_return(status: 200)
 
         storage = described_class.new(host: host, prefix: prefix, http_options: http_options)
         storage.upload(file, "#{dir}/#{file_name}")
@@ -144,6 +144,17 @@ RSpec.describe Shrine::Storage::WebDAV do
         expect(tempfile).to be_instance_of(Down::ChunkedIO)
         expect(tempfile.read).to eq('test_content')
         expect(stab).to have_been_requested
+      end
+    end
+
+    context 'when http timeout set' do
+      it 'raises exception' do
+        expect do
+          storage = described_class.new(host: host, http_options: { timeout: { connect: 5 } })
+          stab = stub_request(:get, "#{host}/#{dir}/wrong_name").to_timeout
+          storage.open("#{dir}/wrong_name")
+          expect(stab).to have_been_requested
+        end.to raise_error(Down::TimeoutError)
       end
     end
 
