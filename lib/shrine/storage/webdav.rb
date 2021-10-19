@@ -24,7 +24,7 @@ class Shrine
         path(base_url, id)
       end
 
-      def open(id)
+      def open(id, **options)
         Down::Http.open(path(@prefixed_host, id)) do |client|
           client.timeout(http_timeout) if http_timeout
           client.basic_auth(http_basic_auth) if http_basic_auth
